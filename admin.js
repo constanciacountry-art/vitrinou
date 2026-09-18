@@ -1,9 +1,4 @@
-```javascript
 const KEY = "vitrinouData";
-
-const SUPABASE_URL = "https://wdaccrdueqjphnwwnevn.supabase.co";
-const SUPABASE_KEY = "sb_publishable_8f19WYiZMSHDpCm9TS_mQQ_UXHsZ-Y9";
-const SUPABASE_BUCKET = "produtos";
 
 let data = JSON.parse(localStorage.getItem(KEY)) || {
   settings: {
@@ -18,27 +13,21 @@ let data = JSON.parse(localStorage.getItem(KEY)) || {
 
 data.settings.password ??= "123456";
 
-let editing = null;
-let currentImageUrl = "";
-
-const $ = id => document.getElementById(id);
+function $(id) {
+  return document.getElementById(id);
+}
 
 function save() {
   localStorage.setItem(KEY, JSON.stringify(data));
 }
 
 function renderList() {
-
   const list = $("adminProducts");
 
-  if (!list) return;
-
-  list.innerHTML =
-    data.products.map(p => `
+  list.innerHTML = data.products.map(function(p) {
+    return `
       <div class="admin-item">
-
         <img src="${p.image || "https://via.placeholder.com/100"}">
-
         <div class="grow">
           <b>${p.name}</b><br>
           ${Number(p.price).toLocaleString("pt-BR", {
@@ -46,491 +35,140 @@ function renderList() {
             currency: "BRL"
           })} · ${p.status}
         </div>
-
-        <button onclick="edit('${p.id}')">
-          Editar
-        </button>
-
+        <button onclick="editProduct('${p.id}')">Editar</button>
       </div>
-    `).join("") || "<p>Nenhum produto cadastrado.</p>";
+    `;
+  }).join("") || "<p>Nenhum produto cadastrado.</p>";
 }
-
-
-/* =========================
-   ABRIR PRODUTO
-========================= */
 
 function openProduct(p) {
+  $("modalTitle").textContent = p ? "Editar produto" : "Novo produto";
 
-  editing = p?.id || null;
+  $("pName").value = p ? p.name : "";
+  $("pPrice").value = p ? p.price : "";
+  $("pCategory").value = p ? p.category : "";
+  $("pDescription").value = p ? p.description : "";
+  $("pStatus").value = p ? p.status : "Disponível";
 
-  $("modalTitle").textContent =
-    editing ? "Editar produto" : "Novo produto";
+  $("deleteProduct").classList.toggle("hidden", !p);
 
-  $("pName").value = p?.name || "";
-  $("pPrice").value = p?.price || "";
-  $("pCategory").value = p?.category || "";
-  $("pDescription").value = p?.description || "";
-  $("pStatus").value = p?.status || "Disponível";
-
-  currentImageUrl = p?.image || "";
-
-  $("pImage").value = "";
-
-  $("imagePreview").innerHTML =
-    currentImageUrl
-      ? `<img src="${currentImageUrl}" style="max-width:150px;max-height:150px;border-radius:8px;">`
-      : "";
-
-  $("uploadMsg").textContent = "";
-
-  $("deleteProduct")
-    .classList
-    .toggle("hidden", !editing);
-
-  $("modal")
-    .classList
-    .remove("hidden");
+  $("modal").classList.remove("hidden");
 }
 
-window.edit = id => {
-  openProduct(
-    data.products.find(p => p.id === id)
-  );
+window.editProduct = function(id) {
+  const product = data.products.find(function(p) {
+    return p.id === id;
+  });
+
+  openProduct(product);
 };
 
+$("loginBtn").onclick = function() {
 
-/* =========================
-   LOGIN
-========================= */
-
-$("loginBtn").onclick = function () {
-
-  const password =
-    $("password").value;
+  const password = $("password").value;
 
   if (password === data.settings.password) {
 
     $("login").classList.add("hidden");
-
     $("dashboard").classList.remove("hidden");
 
-    loadSettings();
+    $("sName").value = data.settings.name;
+    $("sTitle").value = data.settings.title;
+    $("sText").value = data.settings.text;
+    $("sWhatsapp").value = data.settings.whatsapp;
 
     renderList();
 
   } else {
 
-    $("loginMsg").textContent =
-      "Senha incorreta.";
+    $("loginMsg").textContent = "Senha incorreta.";
+
   }
+
 };
 
-
-/* =========================
-   NOVO PRODUTO
-========================= */
-
-$("newBtn").onclick = function () {
-  openProduct();
+$("newBtn").onclick = function() {
+  openProduct(null);
 };
 
-
-/* =========================
-   FECHAR MODAL
-========================= */
-
-$("closeModal").onclick = function () {
+$("closeModal").onclick = function() {
   $("modal").classList.add("hidden");
 };
 
+$("saveProduct").onclick = function() {
 
-/* =========================
-   PREVISUALIZAÇÃO DA IMAGEM
-========================= */
-
-$("pImage").onchange = function () {
-
-  const file =
-    this.files[0];
-
-  if (!file) return;
-
-  if (!file.type.startsWith("image/")) {
-
-    alert("Selecione uma imagem válida.");
-
-    this.value = "";
-
-    return;
-  }
-
-  if (file.size > 5 * 1024 * 1024) {
-
-    alert("A imagem deve ter no máximo 5 MB.");
-
-    this.value = "";
-
-    return;
-  }
-
-  const reader =
-    new FileReader();
-
-  reader.onload = function (e) {
-
-    $("imagePreview").innerHTML = `
-      <img
-        src="${e.target.result}"
-        style="max-width:150px;max-height:150px;border-radius:8px;"
-      >
-    `;
+  const product = {
+    id: Date.now().toString(),
+    name: $("pName").value.trim(),
+    price: Number($("pPrice").value) || 0,
+    category: $("pCategory").value.trim(),
+    image: "",
+    description: $("pDescription").value.trim(),
+    status: $("pStatus").value
   };
 
-  reader.readAsDataURL(file);
+  if (!product.name) {
+    alert("Informe o nome.");
+    return;
+  }
+
+  data.products.push(product);
+
+  save();
+  renderList();
+
+  $("modal").classList.add("hidden");
 };
 
+$("deleteProduct").onclick = function() {
 
-/* =========================
-   UPLOAD PARA SUPABASE
-========================= */
+  alert("Função de exclusão será configurada depois.");
 
-async function uploadImage(file) {
+};
 
-  if (!file) {
-    return currentImageUrl;
+$("saveSettings").onclick = function() {
+
+  data.settings.name = $("sName").value;
+  data.settings.title = $("sTitle").value;
+  data.settings.text = $("sText").value;
+  data.settings.whatsapp = $("sWhatsapp").value;
+
+  if ($("sPassword").value) {
+    data.settings.password = $("sPassword").value;
   }
 
-  const extension =
-    file.name.includes(".")
-      ? file.name.split(".").pop().toLowerCase()
-      : "jpg";
+  save();
 
-  const safeName =
-    file.name
-      .replace(/\.[^/.]+$/, "")
-      .replace(/[^a-zA-Z0-9_-]/g, "_");
+  $("saved").textContent = "Salvo com sucesso.";
 
-  const fileName =
-    Date.now() +
-    "-" +
-    safeName +
-    "." +
-    extension;
+  setTimeout(function() {
+    $("saved").textContent = "";
+  }, 2000);
 
-  const url =
-    SUPABASE_URL +
-    "/storage/v1/object/" +
-    SUPABASE_BUCKET +
-    "/" +
-    fileName;
+};
 
-  const response =
-    await fetch(url, {
+document.querySelectorAll("[data-tab]").forEach(function(button) {
 
-      method: "POST",
+  button.onclick = function() {
 
-      headers: {
-        "Authorization":
-          "Bearer " + SUPABASE_KEY,
-
-        "apikey":
-          SUPABASE_KEY,
-
-        "Content-Type":
-          file.type
-      },
-
-      body: file
+    document.querySelectorAll(".tabs button").forEach(function(x) {
+      x.classList.remove("active");
     });
 
-  if (!response.ok) {
+    button.classList.add("active");
 
-    const error =
-      await response.text();
-
-    console.error(
-      "Erro Supabase:",
-      error
+    $("productsTab").classList.toggle(
+      "hidden",
+      button.dataset.tab !== "products"
     );
 
-    throw new Error(
-      "Não foi possível enviar a imagem. Verifique as políticas do bucket."
+    $("settingsTab").classList.toggle(
+      "hidden",
+      button.dataset.tab !== "settings"
     );
-  }
 
-  return (
-    SUPABASE_URL +
-    "/storage/v1/object/public/" +
-    SUPABASE_BUCKET +
-    "/" +
-    fileName
-  );
-}
-
-
-/* =========================
-   SALVAR PRODUTO
-========================= */
-
-$("saveProduct").onclick =
-  async function () {
-
-    const button =
-      $("saveProduct");
-
-    try {
-
-      const name =
-        $("pName").value.trim();
-
-      if (!name) {
-
-        alert(
-          "Informe o nome."
-        );
-
-        return;
-      }
-
-      const file =
-        $("pImage").files[0];
-
-      button.disabled = true;
-
-      button.textContent =
-        "Salvando...";
-
-      let imageUrl =
-        currentImageUrl;
-
-      if (file) {
-
-        $("uploadMsg").textContent =
-          "Enviando imagem...";
-
-        imageUrl =
-          await uploadImage(file);
-      }
-
-      const p = {
-
-        id:
-          editing ||
-          Date.now().toString(),
-
-        name:
-
-          name,
-
-        price:
-
-          Number(
-            $("pPrice").value
-          ) || 0,
-
-        category:
-
-          $("pCategory")
-            .value
-            .trim(),
-
-        image:
-
-          imageUrl,
-
-        description:
-
-          $("pDescription")
-            .value
-            .trim(),
-
-        status:
-
-          $("pStatus").value
-      };
-
-      if (editing) {
-
-        data.products =
-          data.products.map(
-            x =>
-              x.id === editing
-                ? p
-                : x
-          );
-
-      } else {
-
-        data.products.push(p);
-      }
-
-      save();
-
-      renderList();
-
-      $("modal")
-        .classList
-        .add("hidden");
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        error.message ||
-        "Erro ao salvar produto."
-      );
-
-    } finally {
-
-      button.disabled = false;
-
-      button.textContent =
-        "Salvar";
-
-      $("uploadMsg").textContent =
-        "";
-    }
   };
 
+});
 
-/* =========================
-   EXCLUIR PRODUTO
-========================= */
-
-$("deleteProduct").onclick =
-  function () {
-
-    if (
-      confirm(
-        "Excluir este produto?"
-      )
-    ) {
-
-      data.products =
-        data.products.filter(
-          p =>
-            p.id !== editing
-        );
-
-      save();
-
-      renderList();
-
-      $("modal")
-        .classList
-        .add("hidden");
-    }
-  };
-
-
-/* =========================
-   CONFIGURAÇÕES
-========================= */
-
-function loadSettings() {
-
-  $("sName").value =
-    data.settings.name;
-
-  $("sTitle").value =
-    data.settings.title;
-
-  $("sText").value =
-    data.settings.text;
-
-  $("sWhatsapp").value =
-    data.settings.whatsapp;
-}
-
-$("saveSettings").onclick =
-  function () {
-
-    data.settings = {
-
-      ...data.settings,
-
-      name:
-        $("sName").value,
-
-      title:
-        $("sTitle").value,
-
-      text:
-        $("sText").value,
-
-      whatsapp:
-        $("sWhatsapp").value,
-
-      password:
-        $("sPassword").value ||
-        data.settings.password
-    };
-
-    save();
-
-    $("saved").textContent =
-      "Salvo com sucesso.";
-
-    setTimeout(
-      function () {
-
-        $("saved").textContent =
-          "";
-
-      },
-      2000
-    );
-  };
-
-
-/* =========================
-   ABAS
-========================= */
-
-document
-  .querySelectorAll("[data-tab]")
-  .forEach(function (button) {
-
-    button.onclick =
-      function () {
-
-        document
-          .querySelectorAll(
-            ".tabs button"
-          )
-          .forEach(function (x) {
-
-            x.classList
-              .remove("active");
-          });
-
-        button.classList
-          .add("active");
-
-        $("productsTab")
-          .classList
-          .toggle(
-            "hidden",
-            button.dataset.tab !==
-              "products"
-          );
-
-        $("settingsTab")
-          .classList
-          .toggle(
-            "hidden",
-            button.dataset.tab !==
-              "settings"
-          );
-      };
-  });
-
-document
-  .querySelector(
-    '[data-tab="products"]'
-  )
-  .classList
-  .add("active");
-```
+document.querySelector('[data-tab="products"]').classList.add("active");
