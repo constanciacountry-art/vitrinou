@@ -1,10 +1,139 @@
+```html
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Painel — Vitrinou</title><link rel="stylesheet" href="style.css"></head>
-<body><header><div class="brand">Painel Vitrinou</div><a href="index.html" class="admin-link">Ver catálogo</a></header>
-<main><div id="login" class="panel"><h2>Acesso administrativo</h2><p>Senha inicial: <b>123456</b> (altere nas configurações).</p><input id="password" type="password" placeholder="Senha"><button id="loginBtn">Entrar</button><p id="loginMsg" class="msg"></p></div>
-<div id="dashboard" class="hidden"><div class="tabs"><button data-tab="products">Produtos</button><button data-tab="settings">Configurações</button></div>
-<section id="productsTab" class="panel"><div class="section-head"><h2>Produtos</h2><button id="newBtn">Adicionar produto</button></div><div id="adminProducts"></div></section>
-<section id="settingsTab" class="panel hidden"><h2>Configurações</h2><label>Nome da loja<input id="sName"></label><label>Título<input id="sTitle"></label><label>Texto de apresentação<textarea id="sText"></textarea></label><label>WhatsApp com DDI (somente números)<input id="sWhatsapp" placeholder="5598999999999"></label><label>Senha do painel<input id="sPassword" type="password"></label><button id="saveSettings">Salvar configurações</button><p id="saved" class="msg"></p></section></div></main>
-<div id="modal" class="modal hidden"><div class="modal-card"><button class="close" id="closeModal">×</button><h2 id="modalTitle">Produto</h2><label>Nome<input id="pName"></label><label>Preço<input id="pPrice" type="number" step="0.01"></label><label>Categoria<input id="pCategory" placeholder="Ex.: Camisas"></label><label>Foto (URL)<input id="pImage" placeholder="https://..."></label><label>Descrição<textarea id="pDescription"></textarea></label><label>Status<select id="pStatus"><option>Disponível</option><option>Últimas unidades</option><option>Indisponível</option></select></label><div class="actions"><button id="saveProduct">Salvar</button><button id="deleteProduct" class="danger">Excluir</button></div></div></div>
-<script src="admin.js"></script></body></html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Painel — Vitrinou</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  <div class="brand">Painel Vitrinou</div>
+  <a href="index.html" class="admin-link">Ver catálogo</a>
+</header>
+
+<main>
+
+<div id="login" class="panel">
+  <h2>Acesso administrativo</h2>
+  <p>Senha inicial: <b>123456</b> (altere nas configurações).</p>
+  <input id="password" type="password" placeholder="Senha">
+  <button id="loginBtn">Entrar</button>
+  <p id="loginMsg" class="msg"></p>
+</div>
+
+<div id="dashboard" class="hidden">
+
+  <div class="tabs">
+    <button data-tab="products">Produtos</button>
+    <button data-tab="settings">Configurações</button>
+  </div>
+
+  <section id="productsTab" class="panel">
+    <div class="section-head">
+      <h2>Produtos</h2>
+      <button id="newBtn">Adicionar produto</button>
+    </div>
+
+    <div id="adminProducts"></div>
+  </section>
+
+  <section id="settingsTab" class="panel hidden">
+    <h2>Configurações</h2>
+
+    <label>
+      Nome da loja
+      <input id="sName">
+    </label>
+
+    <label>
+      Título
+      <input id="sTitle">
+    </label>
+
+    <label>
+      Texto de apresentação
+      <textarea id="sText"></textarea>
+    </label>
+
+    <label>
+      WhatsApp com DDI (somente números)
+      <input id="sWhatsapp" placeholder="5598999999999">
+    </label>
+
+    <label>
+      Senha do painel
+      <input id="sPassword" type="password">
+    </label>
+
+    <button id="saveSettings">Salvar configurações</button>
+    <p id="saved" class="msg"></p>
+  </section>
+
+</div>
+
+</main>
+
+<div id="modal" class="modal hidden">
+
+  <div class="modal-card">
+
+    <button class="close" id="closeModal">×</button>
+
+    <h2 id="modalTitle">Produto</h2>
+
+    <label>
+      Nome
+      <input id="pName">
+    </label>
+
+    <label>
+      Preço
+      <input id="pPrice" type="number" step="0.01">
+    </label>
+
+    <label>
+      Categoria
+      <input id="pCategory" placeholder="Ex.: Camisas">
+    </label>
+
+    <label>
+      Foto do produto
+      <input id="pImage" type="file" accept="image/*">
+    </label>
+
+    <div id="imagePreview" style="margin:10px 0;"></div>
+
+    <label>
+      Descrição
+      <textarea id="pDescription"></textarea>
+    </label>
+
+    <label>
+      Status
+      <select id="pStatus">
+        <option>Disponível</option>
+        <option>Últimas unidades</option>
+        <option>Indisponível</option>
+      </select>
+    </label>
+
+    <div class="actions">
+      <button id="saveProduct">Salvar</button>
+      <button id="deleteProduct" class="danger">Excluir</button>
+    </div>
+
+    <p id="uploadMsg" class="msg"></p>
+
+  </div>
+
+</div>
+
+<script src="admin.js"></script>
+
+</body>
+</html>
+```
