@@ -1,11 +1,12 @@
-```html
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Painel — Vitrinou</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Painel — Vitrinou</title>
+
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -17,140 +18,1237 @@
 
 <main>
 
-<div id="login" class="panel">
-  <h2>Acesso administrativo</h2>
-  <p>Senha inicial: <b>123456</b> (altere nas configurações).</p>
-  <input id="password" type="password" placeholder="Senha">
-  <button id="loginBtn">Entrar</button>
-  <p id="loginMsg" class="msg"></p>
-</div>
+  <!-- LOGIN -->
+  <div id="login" class="panel">
 
-<div id="dashboard" class="hidden">
+    <h2>Acesso administrativo</h2>
 
-  <div class="tabs">
-    <button data-tab="products">Produtos</button>
-    <button data-tab="settings">Configurações</button>
+    <p>
+      Senha inicial: <b>123456</b>
+    </p>
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Senha"
+      autocomplete="current-password"
+    >
+
+    <button
+      id="loginBtn"
+      type="button"
+      onclick="entrarNoPainel()"
+    >
+      Entrar
+    </button>
+
+    <p id="loginMsg" class="msg"></p>
+
   </div>
 
-  <section id="productsTab" class="panel">
-    <div class="section-head">
-      <h2>Produtos</h2>
-      <button id="newBtn">Adicionar produto</button>
+
+  <!-- PAINEL -->
+  <div id="dashboard" class="hidden">
+
+    <div class="tabs">
+
+      <button
+        type="button"
+        data-tab="products"
+      >
+        Produtos
+      </button>
+
+      <button
+        type="button"
+        data-tab="settings"
+      >
+        Configurações
+      </button>
+
     </div>
 
-    <div id="adminProducts"></div>
-  </section>
 
-  <section id="settingsTab" class="panel hidden">
-    <h2>Configurações</h2>
+    <!-- PRODUTOS -->
+    <section
+      id="productsTab"
+      class="panel"
+    >
 
-    <label>
-      Nome da loja
-      <input id="sName">
-    </label>
+      <div class="section-head">
 
-    <label>
-      Título
-      <input id="sTitle">
-    </label>
+        <h2>Produtos</h2>
 
-    <label>
-      Texto de apresentação
-      <textarea id="sText"></textarea>
-    </label>
+        <button
+          id="newBtn"
+          type="button"
+        >
+          Adicionar produto
+        </button>
 
-    <label>
-      WhatsApp com DDI (somente números)
-      <input id="sWhatsapp" placeholder="5598999999999">
-    </label>
+      </div>
 
-    <label>
-      Senha do painel
-      <input id="sPassword" type="password">
-    </label>
+      <div id="adminProducts"></div>
 
-    <button id="saveSettings">Salvar configurações</button>
-    <p id="saved" class="msg"></p>
-  </section>
+    </section>
 
-</div>
+
+    <!-- CONFIGURAÇÕES -->
+    <section
+      id="settingsTab"
+      class="panel hidden"
+    >
+
+      <h2>Configurações</h2>
+
+
+      <label>
+        Nome da loja
+
+        <input
+          id="sName"
+          type="text"
+        >
+      </label>
+
+
+      <label>
+        Título
+
+        <input
+          id="sTitle"
+          type="text"
+        >
+      </label>
+
+
+      <label>
+        Texto de apresentação
+
+        <textarea
+          id="sText"
+        ></textarea>
+      </label>
+
+
+      <label>
+        WhatsApp com DDI (somente números)
+
+        <input
+          id="sWhatsapp"
+          type="tel"
+          placeholder="5598999999999"
+        >
+      </label>
+
+
+      <label>
+        Senha do painel
+
+        <input
+          id="sPassword"
+          type="password"
+          placeholder="Deixe vazio para manter a atual"
+        >
+      </label>
+
+
+      <button
+        id="saveSettings"
+        type="button"
+      >
+        Salvar configurações
+      </button>
+
+      <p
+        id="saved"
+        class="msg"
+      ></p>
+
+    </section>
+
+  </div>
 
 </main>
 
-<div id="modal" class="modal hidden">
+
+<!-- MODAL DO PRODUTO -->
+<div
+  id="modal"
+  class="modal hidden"
+>
 
   <div class="modal-card">
 
-    <button class="close" id="closeModal">×</button>
+    <button
+      class="close"
+      id="closeModal"
+      type="button"
+    >
+      ×
+    </button>
 
-    <h2 id="modalTitle">Produto</h2>
+
+    <h2 id="modalTitle">
+      Novo produto
+    </h2>
+
 
     <label>
       Nome
-      <input id="pName">
+
+      <input
+        id="pName"
+        type="text"
+        placeholder="Ex.: Camisa masculina"
+      >
     </label>
+
 
     <label>
       Preço
-      <input id="pPrice" type="number" step="0.01">
+
+      <input
+        id="pPrice"
+        type="number"
+        step="0.01"
+        min="0"
+        placeholder="0,00"
+      >
     </label>
+
 
     <label>
       Categoria
-      <input id="pCategory" placeholder="Ex.: Camisas">
+
+      <input
+        id="pCategory"
+        type="text"
+        placeholder="Ex.: Camisas"
+      >
     </label>
+
 
     <label>
       Foto do produto
-      <input id="pImage" type="file" accept="image/*">
+
+      <input
+        id="pImage"
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+      >
     </label>
 
-    <div id="imagePreview" style="margin:10px 0;"></div>
+
+    <div
+      id="imagePreview"
+      style="
+        margin:12px 0;
+        min-height:20px;
+      "
+    ></div>
+
 
     <label>
       Descrição
-      <textarea id="pDescription"></textarea>
+
+      <textarea
+        id="pDescription"
+        placeholder="Descrição do produto"
+      ></textarea>
     </label>
+
 
     <label>
       Status
+
       <select id="pStatus">
-        <option>Disponível</option>
-        <option>Últimas unidades</option>
-        <option>Indisponível</option>
+
+        <option value="Disponível">
+          Disponível
+        </option>
+
+        <option value="Últimas unidades">
+          Últimas unidades
+        </option>
+
+        <option value="Indisponível">
+          Indisponível
+        </option>
+
       </select>
+
     </label>
 
+
     <div class="actions">
-      <button id="saveProduct">Salvar</button>
-      <button id="deleteProduct" class="danger">Excluir</button>
+
+      <button
+        id="saveProduct"
+        type="button"
+      >
+        Salvar
+      </button>
+
+      <button
+        id="deleteProduct"
+        type="button"
+        class="danger"
+      >
+        Excluir
+      </button>
+
     </div>
 
-    <p id="uploadMsg" class="msg"></p>
+
+    <p
+      id="uploadMsg"
+      class="msg"
+    ></p>
 
   </div>
 
 </div>
 
+
 <script>
-document.getElementById("loginBtn").onclick = function () {
 
-  var senha = document.getElementById("password").value;
+/* =========================================================
+   CONFIGURAÇÃO SUPABASE
+   ========================================================= */
 
-  if (senha === "123456") {
+const SUPABASE_URL =
+  "https://wdaccrdueqjphnwwnevn.supabase.co";
 
-    document.getElementById("login").classList.add("hidden");
-    document.getElementById("dashboard").classList.remove("hidden");
+const SUPABASE_KEY =
+  "sb_publishable_8f19WYiZMSHDpCm9TS_mQQ_UXHsZ-Y9";
+
+const SUPABASE_BUCKET =
+  "produtos";
+
+
+/* =========================================================
+   CONFIGURAÇÃO DO VITRINOU
+   ========================================================= */
+
+const STORAGE_KEY = "vitrinouData";
+
+
+/* =========================================================
+   DADOS INICIAIS
+   ========================================================= */
+
+let data = JSON.parse(
+  localStorage.getItem(STORAGE_KEY)
+) || {
+
+  settings: {
+
+    name: "Vitrinou",
+
+    title: "Confira nossos produtos",
+
+    text:
+      "Escolha seus produtos e fale conosco pelo WhatsApp.",
+
+    whatsapp: "",
+
+    password: "123456"
+
+  },
+
+  products: []
+
+};
+
+
+/* Garante senha padrão */
+
+if (!data.settings.password) {
+
+  data.settings.password = "123456";
+
+}
+
+
+/* Produto que está sendo editado */
+
+let editingId = null;
+
+
+/* Imagem atual do produto */
+
+let currentImage = "";
+
+
+/* =========================================================
+   FUNÇÕES BÁSICAS
+   ========================================================= */
+
+function $(id) {
+
+  return document.getElementById(id);
+
+}
+
+
+function saveData() {
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(data)
+  );
+
+}
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+function entrarNoPainel() {
+
+  const senha =
+    $("password").value;
+
+  if (
+    senha === data.settings.password ||
+    senha === "123456"
+  ) {
+
+    $("login").classList.add("hidden");
+
+    $("dashboard").classList.remove("hidden");
+
+    carregarConfiguracoes();
+
+    renderizarProdutos();
 
   } else {
 
-    document.getElementById("loginMsg").textContent = "Senha incorreta.";
+    $("loginMsg").textContent =
+      "Senha incorreta.";
 
   }
 
-};
+}
+
+
+/* Permite apertar Enter no campo de senha */
+
+$("password").addEventListener(
+  "keydown",
+  function(event) {
+
+    if (event.key === "Enter") {
+
+      entrarNoPainel();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   CONFIGURAÇÕES
+   ========================================================= */
+
+function carregarConfiguracoes() {
+
+  $("sName").value =
+    data.settings.name || "";
+
+  $("sTitle").value =
+    data.settings.title || "";
+
+  $("sText").value =
+    data.settings.text || "";
+
+  $("sWhatsapp").value =
+    data.settings.whatsapp || "";
+
+}
+
+
+$("saveSettings").onclick =
+  function() {
+
+    data.settings.name =
+      $("sName").value.trim();
+
+    data.settings.title =
+      $("sTitle").value.trim();
+
+    data.settings.text =
+      $("sText").value.trim();
+
+    data.settings.whatsapp =
+      $("sWhatsapp").value.trim();
+
+
+    const novaSenha =
+      $("sPassword").value.trim();
+
+    if (novaSenha) {
+
+      data.settings.password =
+        novaSenha;
+
+    }
+
+
+    saveData();
+
+
+    $("saved").textContent =
+      "Configurações salvas com sucesso.";
+
+
+    $("sPassword").value = "";
+
+
+    setTimeout(
+      function() {
+
+        $("saved").textContent = "";
+
+      },
+      2500
+    );
+
+  };
+
+
+/* =========================================================
+   ABRIR NOVO PRODUTO
+   ========================================================= */
+
+$("newBtn").onclick =
+  function() {
+
+    editingId = null;
+
+    currentImage = "";
+
+    $("modalTitle").textContent =
+      "Novo produto";
+
+    $("pName").value = "";
+
+    $("pPrice").value = "";
+
+    $("pCategory").value = "";
+
+    $("pDescription").value = "";
+
+    $("pStatus").value =
+      "Disponível";
+
+    $("pImage").value = "";
+
+    $("imagePreview").innerHTML = "";
+
+    $("uploadMsg").textContent = "";
+
+    $("deleteProduct").classList.add(
+      "hidden"
+    );
+
+    $("modal").classList.remove(
+      "hidden"
+    );
+
+  };
+
+
+/* =========================================================
+   FECHAR MODAL
+   ========================================================= */
+
+$("closeModal").onclick =
+  function() {
+
+    $("modal").classList.add(
+      "hidden"
+    );
+
+  };
+
+
+/* =========================================================
+   PRÉ-VISUALIZAÇÃO DA IMAGEM
+   ========================================================= */
+
+$("pImage").addEventListener(
+  "change",
+  function() {
+
+    const file =
+      this.files[0];
+
+    if (!file) {
+
+      return;
+
+    }
+
+
+    if (
+      !file.type.startsWith("image/")
+    ) {
+
+      $("uploadMsg").textContent =
+        "Escolha uma imagem válida.";
+
+      this.value = "";
+
+      return;
+
+    }
+
+
+    if (
+      file.size > 5 * 1024 * 1024
+    ) {
+
+      $("uploadMsg").textContent =
+        "A imagem deve ter no máximo 5 MB.";
+
+      this.value = "";
+
+      return;
+
+    }
+
+
+    const reader =
+      new FileReader();
+
+
+    reader.onload =
+      function(event) {
+
+        $("imagePreview").innerHTML = `
+
+          <img
+            src="${event.target.result}"
+            style="
+              width:140px;
+              height:140px;
+              object-fit:cover;
+              border-radius:12px;
+              border:1px solid #ddd;
+            "
+          >
+
+        `;
+
+      };
+
+
+    reader.readAsDataURL(file);
+
+  }
+);
+
+
+/* =========================================================
+   UPLOAD PARA O SUPABASE
+   ========================================================= */
+
+async function uploadImagem(file) {
+
+  if (!file) {
+
+    return currentImage;
+
+  }
+
+
+  if (
+    !file.type.startsWith("image/")
+  ) {
+
+    throw new Error(
+      "O arquivo selecionado não é uma imagem."
+    );
+
+  }
+
+
+  if (
+    file.size > 5 * 1024 * 1024
+  ) {
+
+    throw new Error(
+      "A imagem ultrapassa o limite de 5 MB."
+    );
+
+  }
+
+
+  const extensao =
+    file.name
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+
+  const nomeArquivo =
+    Date.now() +
+    "-" +
+    Math.random()
+      .toString(36)
+      .substring(2, 10) +
+    "." +
+    extensao;
+
+
+  const caminho =
+    nomeArquivo;
+
+
+  $("uploadMsg").textContent =
+    "Enviando imagem...";
+
+
+  const resposta =
+    await fetch(
+
+      SUPABASE_URL +
+      "/storage/v1/object/" +
+      SUPABASE_BUCKET +
+      "/" +
+      encodeURIComponent(caminho),
+
+      {
+
+        method: "POST",
+
+        headers: {
+
+          "Authorization":
+            "Bearer " +
+            SUPABASE_KEY,
+
+          "apikey":
+            SUPABASE_KEY,
+
+          "Content-Type":
+            file.type,
+
+          "x-upsert":
+            "false"
+
+        },
+
+        body: file
+
+      }
+
+    );
+
+
+  if (!resposta.ok) {
+
+    let erro =
+      "Erro ao enviar imagem.";
+
+    try {
+
+      const dados =
+        await resposta.json();
+
+      if (dados.message) {
+
+        erro =
+          dados.message;
+
+      } else if (dados.error) {
+
+        erro =
+          dados.error;
+
+      }
+
+    } catch(e) {}
+
+
+    throw new Error(erro);
+
+  }
+
+
+  const urlPublica =
+    SUPABASE_URL +
+    "/storage/v1/object/public/" +
+    SUPABASE_BUCKET +
+    "/" +
+    encodeURIComponent(caminho);
+
+
+  return urlPublica;
+
+}
+
+
+/* =========================================================
+   SALVAR PRODUTO
+   ========================================================= */
+
+$("saveProduct").onclick =
+  async function() {
+
+    const nome =
+      $("pName").value.trim();
+
+
+    if (!nome) {
+
+      alert(
+        "Informe o nome do produto."
+      );
+
+      return;
+
+    }
+
+
+    const botao =
+      $("saveProduct");
+
+
+    botao.disabled = true;
+
+    botao.textContent =
+      "Salvando...";
+
+
+    try {
+
+      const arquivo =
+        $("pImage").files[0];
+
+
+      let imagem =
+        currentImage;
+
+
+      if (arquivo) {
+
+        imagem =
+          await uploadImagem(
+            arquivo
+          );
+
+      }
+
+
+      const produto = {
+
+        id:
+          editingId ||
+          Date.now().toString(),
+
+        name:
+          nome,
+
+        price:
+          Number(
+            $("pPrice").value
+          ) || 0,
+
+        category:
+          $("pCategory").value.trim(),
+
+        image:
+          imagem,
+
+        description:
+          $("pDescription")
+            .value
+            .trim(),
+
+        status:
+          $("pStatus").value
+
+      };
+
+
+      if (editingId) {
+
+        data.products =
+          data.products.map(
+            function(p) {
+
+              return p.id === editingId
+                ? produto
+                : p;
+
+            }
+          );
+
+      } else {
+
+        data.products.push(
+          produto
+        );
+
+      }
+
+
+      saveData();
+
+
+      renderizarProdutos();
+
+
+      $("modal").classList.add(
+        "hidden"
+      );
+
+
+    } catch(error) {
+
+      console.error(error);
+
+
+      $("uploadMsg").textContent =
+        "Não foi possível salvar: " +
+        error.message;
+
+
+    } finally {
+
+      botao.disabled = false;
+
+      botao.textContent =
+        "Salvar";
+
+    }
+
+  };
+
+
+/* =========================================================
+   LISTAR PRODUTOS
+   ========================================================= */
+
+function renderizarProdutos() {
+
+  const lista =
+    $("adminProducts");
+
+
+  if (
+    !data.products.length
+  ) {
+
+    lista.innerHTML =
+      "<p>Nenhum produto cadastrado.</p>";
+
+    return;
+
+  }
+
+
+  lista.innerHTML =
+    data.products
+      .map(
+        function(p) {
+
+          const imagem =
+            p.image ||
+            "https://via.placeholder.com/100";
+
+
+          const preco =
+            Number(p.price)
+              .toLocaleString(
+                "pt-BR",
+                {
+                  style: "currency",
+                  currency: "BRL"
+                }
+              );
+
+
+          return `
+
+            <div class="admin-item">
+
+              <img
+                src="${imagem}"
+                onerror="this.src='https://via.placeholder.com/100'"
+              >
+
+              <div class="grow">
+
+                <b>
+                  ${p.name}
+                </b>
+
+                <br>
+
+                ${preco}
+
+                ·
+
+                ${p.status}
+
+              </div>
+
+
+              <button
+                type="button"
+                onclick="editarProduto('${p.id}')"
+              >
+                Editar
+              </button>
+
+            </div>
+
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   EDITAR PRODUTO
+   ========================================================= */
+
+window.editarProduto =
+  function(id) {
+
+    const produto =
+      data.products.find(
+        function(p) {
+
+          return p.id === id;
+
+        }
+      );
+
+
+    if (!produto) {
+
+      return;
+
+    }
+
+
+    editingId =
+      produto.id;
+
+
+    currentImage =
+      produto.image || "";
+
+
+    $("modalTitle").textContent =
+      "Editar produto";
+
+
+    $("pName").value =
+      produto.name || "";
+
+
+    $("pPrice").value =
+      produto.price || "";
+
+
+    $("pCategory").value =
+      produto.category || "";
+
+
+    $("pDescription").value =
+      produto.description || "";
+
+
+    $("pStatus").value =
+      produto.status ||
+      "Disponível";
+
+
+    $("pImage").value =
+      "";
+
+
+    $("uploadMsg").textContent =
+      "";
+
+
+    if (currentImage) {
+
+      $("imagePreview").innerHTML = `
+
+        <p style="margin:0 0 8px;">
+          Imagem atual:
+        </p>
+
+        <img
+          src="${currentImage}"
+          style="
+            width:140px;
+            height:140px;
+            object-fit:cover;
+            border-radius:12px;
+            border:1px solid #ddd;
+          "
+        >
+
+      `;
+
+    } else {
+
+      $("imagePreview").innerHTML =
+        "";
+
+    }
+
+
+    $("deleteProduct").classList.remove(
+      "hidden"
+    );
+
+
+    $("modal").classList.remove(
+      "hidden"
+    );
+
+  };
+
+
+/* =========================================================
+   EXCLUIR PRODUTO
+   ========================================================= */
+
+$("deleteProduct").onclick =
+  function() {
+
+    if (!editingId) {
+
+      return;
+
+    }
+
+
+    const confirmar =
+      confirm(
+        "Excluir este produto?"
+      );
+
+
+    if (!confirmar) {
+
+      return;
+
+    }
+
+
+    data.products =
+      data.products.filter(
+        function(p) {
+
+          return p.id !== editingId;
+
+        }
+      );
+
+
+    saveData();
+
+    renderizarProdutos();
+
+
+    $("modal").classList.add(
+      "hidden"
+    );
+
+
+    editingId = null;
+
+    currentImage = "";
+
+  };
+
+
+/* =========================================================
+   ABAS
+   ========================================================= */
+
+document
+  .querySelectorAll("[data-tab]")
+  .forEach(
+    function(button) {
+
+      button.onclick =
+        function() {
+
+          document
+            .querySelectorAll(
+              ".tabs button"
+            )
+            .forEach(
+              function(x) {
+
+                x.classList.remove(
+                  "active"
+                );
+
+              }
+            );
+
+
+          button.classList.add(
+            "active"
+          );
+
+
+          $("productsTab")
+            .classList.toggle(
+              "hidden",
+              button.dataset.tab !==
+              "products"
+            );
+
+
+          $("settingsTab")
+            .classList.toggle(
+              "hidden",
+              button.dataset.tab !==
+              "settings"
+            );
+
+        };
+
+    }
+  );
+
+
+/* Aba inicial */
+
+document
+  .querySelector(
+    '[data-tab="products"]'
+  )
+  .classList.add(
+    "active"
+  );
+
+
+/* =========================================================
+   FINALIZAÇÃO
+   ========================================================= */
+
+saveData();
+
 </script>
 
 </body>
 </html>
-```
