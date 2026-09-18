@@ -132,7 +132,24 @@
 
 </div>
 
-<script src="admin.js"></script>
+<script>
+document.getElementById("loginBtn").onclick = function () {
+
+  var senha = document.getElementById("password").value;
+
+  if (senha === "123456") {
+
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("dashboard").classList.remove("hidden");
+
+  } else {
+
+    document.getElementById("loginMsg").textContent = "Senha incorreta.";
+
+  }
+
+};
+</script>
 
 </body>
 </html>
