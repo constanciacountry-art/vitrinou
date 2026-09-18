@@ -28,10 +28,17 @@ function save() {
 }
 
 function renderList() {
-  $("adminProducts").innerHTML =
+
+  const list = $("adminProducts");
+
+  if (!list) return;
+
+  list.innerHTML =
     data.products.map(p => `
       <div class="admin-item">
+
         <img src="${p.image || "https://via.placeholder.com/100"}">
+
         <div class="grow">
           <b>${p.name}</b><br>
           ${Number(p.price).toLocaleString("pt-BR", {
@@ -39,12 +46,22 @@ function renderList() {
             currency: "BRL"
           })} · ${p.status}
         </div>
-        <button onclick="edit('${p.id}')">Editar</button>
+
+        <button onclick="edit('${p.id}')">
+          Editar
+        </button>
+
       </div>
     `).join("") || "<p>Nenhum produto cadastrado.</p>";
 }
 
-function open(p) {
+
+/* =========================
+   ABRIR PRODUTO
+========================= */
+
+function openProduct(p) {
+
   editing = p?.id || null;
 
   $("modalTitle").textContent =
@@ -60,9 +77,10 @@ function open(p) {
 
   $("pImage").value = "";
 
-  $("imagePreview").innerHTML = currentImageUrl
-    ? `<img src="${currentImageUrl}" style="max-width:150px;max-height:150px;border-radius:8px;">`
-    : "";
+  $("imagePreview").innerHTML =
+    currentImageUrl
+      ? `<img src="${currentImageUrl}" style="max-width:150px;max-height:150px;border-radius:8px;">`
+      : "";
 
   $("uploadMsg").textContent = "";
 
@@ -70,16 +88,59 @@ function open(p) {
     .classList
     .toggle("hidden", !editing);
 
-  $("modal").classList.remove("hidden");
+  $("modal")
+    .classList
+    .remove("hidden");
 }
 
 window.edit = id => {
-  open(data.products.find(p => p.id === id));
+  openProduct(
+    data.products.find(p => p.id === id)
+  );
 };
 
-$("newBtn").onclick = () => open();
 
-$("closeModal").onclick = () => {
+/* =========================
+   LOGIN
+========================= */
+
+$("loginBtn").onclick = function () {
+
+  const password =
+    $("password").value;
+
+  if (password === data.settings.password) {
+
+    $("login").classList.add("hidden");
+
+    $("dashboard").classList.remove("hidden");
+
+    loadSettings();
+
+    renderList();
+
+  } else {
+
+    $("loginMsg").textContent =
+      "Senha incorreta.";
+  }
+};
+
+
+/* =========================
+   NOVO PRODUTO
+========================= */
+
+$("newBtn").onclick = function () {
+  openProduct();
+};
+
+
+/* =========================
+   FECHAR MODAL
+========================= */
+
+$("closeModal").onclick = function () {
   $("modal").classList.add("hidden");
 };
 
@@ -88,27 +149,36 @@ $("closeModal").onclick = () => {
    PREVISUALIZAÇÃO DA IMAGEM
 ========================= */
 
-$("pImage").addEventListener("change", function () {
+$("pImage").onchange = function () {
 
-  const file = this.files[0];
+  const file =
+    this.files[0];
 
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
+
     alert("Selecione uma imagem válida.");
+
     this.value = "";
+
     return;
   }
 
   if (file.size > 5 * 1024 * 1024) {
+
     alert("A imagem deve ter no máximo 5 MB.");
+
     this.value = "";
+
     return;
   }
 
-  const reader = new FileReader();
+  const reader =
+    new FileReader();
 
   reader.onload = function (e) {
+
     $("imagePreview").innerHTML = `
       <img
         src="${e.target.result}"
@@ -118,11 +188,11 @@ $("pImage").addEventListener("change", function () {
   };
 
   reader.readAsDataURL(file);
-});
+};
 
 
 /* =========================
-   UPLOAD SUPABASE
+   UPLOAD PARA SUPABASE
 ========================= */
 
 async function uploadImage(file) {
@@ -131,47 +201,61 @@ async function uploadImage(file) {
     return currentImageUrl;
   }
 
-  if (!file.type.startsWith("image/")) {
-    throw new Error("O arquivo selecionado não é uma imagem.");
-  }
+  const extension =
+    file.name.includes(".")
+      ? file.name.split(".").pop().toLowerCase()
+      : "jpg";
 
-  if (file.size > 5 * 1024 * 1024) {
-    throw new Error("A imagem deve ter no máximo 5 MB.");
-  }
-
-  const originalName = file.name
-    .replace(/[^a-zA-Z0-9._-]/g, "_");
+  const safeName =
+    file.name
+      .replace(/\.[^/.]+$/, "")
+      .replace(/[^a-zA-Z0-9_-]/g, "_");
 
   const fileName =
-    Date.now() + "-" + originalName;
+    Date.now() +
+    "-" +
+    safeName +
+    "." +
+    extension;
 
-  const response = await fetch(
+  const url =
     SUPABASE_URL +
     "/storage/v1/object/" +
     SUPABASE_BUCKET +
     "/" +
-    fileName,
-    {
+    fileName;
+
+  const response =
+    await fetch(url, {
+
       method: "POST",
 
       headers: {
-        "Authorization": "Bearer " + SUPABASE_KEY,
-        "apikey": SUPABASE_KEY,
-        "Content-Type": file.type
+        "Authorization":
+          "Bearer " + SUPABASE_KEY,
+
+        "apikey":
+          SUPABASE_KEY,
+
+        "Content-Type":
+          file.type
       },
 
       body: file
-    }
-  );
+    });
 
   if (!response.ok) {
 
-    const errorText = await response.text();
+    const error =
+      await response.text();
 
-    console.error("Supabase:", errorText);
+    console.error(
+      "Erro Supabase:",
+      error
+    );
 
     throw new Error(
-      "Erro ao enviar a imagem para o Supabase."
+      "Não foi possível enviar a imagem. Verifique as políticas do bucket."
     );
   }
 
@@ -189,139 +273,156 @@ async function uploadImage(file) {
    SALVAR PRODUTO
 ========================= */
 
-$("saveProduct").onclick = async function () {
+$("saveProduct").onclick =
+  async function () {
 
-  const button = $("saveProduct");
+    const button =
+      $("saveProduct");
 
-  try {
+    try {
 
-    const file = $("pImage").files[0];
+      const name =
+        $("pName").value.trim();
 
-    const name = $("pName").value.trim();
+      if (!name) {
 
-    if (!name) {
-      alert("Informe o nome.");
-      return;
-    }
-
-    button.disabled = true;
-    button.textContent = "Salvando...";
-
-    let imageUrl = currentImageUrl;
-
-    if (file) {
-
-      $("uploadMsg").textContent =
-        "Enviando imagem...";
-
-      imageUrl = await uploadImage(file);
-    }
-
-    const p = {
-      id: editing || Date.now().toString(),
-
-      name: name,
-
-      price:
-        Number($("pPrice").value) || 0,
-
-      category:
-        $("pCategory").value.trim(),
-
-      image:
-        imageUrl,
-
-      description:
-        $("pDescription").value.trim(),
-
-      status:
-        $("pStatus").value
-    };
-
-    if (editing) {
-
-      data.products =
-        data.products.map(x =>
-          x.id === editing ? p : x
+        alert(
+          "Informe o nome."
         );
 
-    } else {
+        return;
+      }
 
-      data.products.push(p);
+      const file =
+        $("pImage").files[0];
+
+      button.disabled = true;
+
+      button.textContent =
+        "Salvando...";
+
+      let imageUrl =
+        currentImageUrl;
+
+      if (file) {
+
+        $("uploadMsg").textContent =
+          "Enviando imagem...";
+
+        imageUrl =
+          await uploadImage(file);
+      }
+
+      const p = {
+
+        id:
+          editing ||
+          Date.now().toString(),
+
+        name:
+
+          name,
+
+        price:
+
+          Number(
+            $("pPrice").value
+          ) || 0,
+
+        category:
+
+          $("pCategory")
+            .value
+            .trim(),
+
+        image:
+
+          imageUrl,
+
+        description:
+
+          $("pDescription")
+            .value
+            .trim(),
+
+        status:
+
+          $("pStatus").value
+      };
+
+      if (editing) {
+
+        data.products =
+          data.products.map(
+            x =>
+              x.id === editing
+                ? p
+                : x
+          );
+
+      } else {
+
+        data.products.push(p);
+      }
+
+      save();
+
+      renderList();
+
+      $("modal")
+        .classList
+        .add("hidden");
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        error.message ||
+        "Erro ao salvar produto."
+      );
+
+    } finally {
+
+      button.disabled = false;
+
+      button.textContent =
+        "Salvar";
+
+      $("uploadMsg").textContent =
+        "";
     }
-
-    save();
-
-    renderList();
-
-    $("modal").classList.add("hidden");
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert(
-      error.message ||
-      "Ocorreu um erro ao salvar o produto."
-    );
-
-  } finally {
-
-    button.disabled = false;
-    button.textContent = "Salvar";
-
-    $("uploadMsg").textContent = "";
-  }
-};
+  };
 
 
 /* =========================
    EXCLUIR PRODUTO
 ========================= */
 
-$("deleteProduct").onclick = function () {
+$("deleteProduct").onclick =
+  function () {
 
-  if (confirm("Excluir este produto?")) {
+    if (
+      confirm(
+        "Excluir este produto?"
+      )
+    ) {
 
-    data.products =
-      data.products.filter(
-        p => p.id !== editing
-      );
+      data.products =
+        data.products.filter(
+          p =>
+            p.id !== editing
+        );
 
-    save();
+      save();
 
-    renderList();
+      renderList();
 
-    $("modal").classList.add("hidden");
-  }
-};
-
-
-/* =========================
-   LOGIN
-========================= */
-
-$("loginBtn").onclick = function () {
-
-  if (
-    $("password").value ===
-    data.settings.password
-  ) {
-
-    $("login").classList.add("hidden");
-
-    $("dashboard").classList.remove("hidden");
-
-    loadSettings();
-
-    renderList();
-
-  } else {
-
-    $("loginMsg").textContent =
-      "Senha incorreta.";
-  }
-};
+      $("modal")
+        .classList
+        .add("hidden");
+    }
+  };
 
 
 /* =========================
@@ -343,37 +444,45 @@ function loadSettings() {
     data.settings.whatsapp;
 }
 
-$("saveSettings").onclick = function () {
+$("saveSettings").onclick =
+  function () {
 
-  data.settings = {
-    ...data.settings,
+    data.settings = {
 
-    name:
-      $("sName").value,
+      ...data.settings,
 
-    title:
-      $("sTitle").value,
+      name:
+        $("sName").value,
 
-    text:
-      $("sText").value,
+      title:
+        $("sTitle").value,
 
-    whatsapp:
-      $("sWhatsapp").value,
+      text:
+        $("sText").value,
 
-    password:
-      $("sPassword").value ||
-      data.settings.password
+      whatsapp:
+        $("sWhatsapp").value,
+
+      password:
+        $("sPassword").value ||
+        data.settings.password
+    };
+
+    save();
+
+    $("saved").textContent =
+      "Salvo com sucesso.";
+
+    setTimeout(
+      function () {
+
+        $("saved").textContent =
+          "";
+
+      },
+      2000
+    );
   };
-
-  save();
-
-  $("saved").textContent =
-    "Salvo com sucesso.";
-
-  setTimeout(function () {
-    $("saved").textContent = "";
-  }, 2000);
-};
 
 
 /* =========================
@@ -382,36 +491,46 @@ $("saveSettings").onclick = function () {
 
 document
   .querySelectorAll("[data-tab]")
-  .forEach(function (b) {
+  .forEach(function (button) {
 
-    b.onclick = function () {
+    button.onclick =
+      function () {
 
-      document
-        .querySelectorAll(".tabs button")
-        .forEach(function (x) {
-          x.classList.remove("active");
-        });
+        document
+          .querySelectorAll(
+            ".tabs button"
+          )
+          .forEach(function (x) {
 
-      b.classList.add("active");
+            x.classList
+              .remove("active");
+          });
 
-      $("productsTab")
-        .classList
-        .toggle(
-          "hidden",
-          b.dataset.tab !== "products"
-        );
+        button.classList
+          .add("active");
 
-      $("settingsTab")
-        .classList
-        .toggle(
-          "hidden",
-          b.dataset.tab !== "settings"
-        );
-    };
+        $("productsTab")
+          .classList
+          .toggle(
+            "hidden",
+            button.dataset.tab !==
+              "products"
+          );
+
+        $("settingsTab")
+          .classList
+          .toggle(
+            "hidden",
+            button.dataset.tab !==
+              "settings"
+          );
+      };
   });
 
 document
-  .querySelector('[data-tab="products"]')
+  .querySelector(
+    '[data-tab="products"]'
+  )
   .classList
   .add("active");
 ```
